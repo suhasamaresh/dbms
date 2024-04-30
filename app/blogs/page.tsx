@@ -133,7 +133,7 @@ const FeedPage = () => {
                   <div className="w-24 md:w-32 mt-2 md:mt-3 h-24 md:h-32 bg-cover bg-center rounded-l-lg" style={{ backgroundImage: `url(${blog.thumbnail})` }} />
                   <div className="p-4 flex-1">
                     <h3 className="text-lg md:text-xl font-medium mb-2 font-mono">{blog.title}</h3>
-                    <p className="text-gray-400 mb-2 md:mb-4 font-mono ">{blog.content && blog.content.length > 150 ? blog.content.slice(0, 150) + '...' : blog.content}</p>
+                    <p className="text-gray-400 mb-2 md:mb-4 font-mono">{blog.content && blog.content.length > 150 ? blog.content.slice(0, 150) + '...' : blog.content}</p>
                     <div className="flex items-center justify-between">
                       <div className="text-gray-400 text-sm font-mono">
                         <span className="mr-2">{blog.reads} reads</span>
