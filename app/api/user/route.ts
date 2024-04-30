@@ -6,7 +6,6 @@ import { Prisma } from "@prisma/client"; // Import Request from Prisma client
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-    
         const { name, email, password } = body;
         const existingUserByEmail = await prisma.user.findUnique({
             where: { email: email}
