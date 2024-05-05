@@ -13,6 +13,10 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      flex: {
+        "f2": "2 2 0",
+        "f3": "3 3 0",
+      },
     },
   },
   plugins: [],

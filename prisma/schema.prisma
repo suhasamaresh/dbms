@@ -15,6 +15,9 @@ model User {
   emailVerified DateTime?
   password      String          
   image         String?
+  noblogs      Int             @default(0)
+  noeventsattended     Int             @default(0)
+  noeventscreated     Int             @default(0)
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support
@@ -80,6 +83,7 @@ model Authenticator {
 
 model blog {
   id        Int   @id @default(autoincrement())
+  image     String
   title     String
   content   String
   published Boolean
@@ -95,9 +99,10 @@ model events {
   id        String   @id @default(cuid())
   title     String
   description   String
-  published Boolean
-  authorId  String
-  author    String
+  organizer String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Deadline String
+  location String
+  Online Boolean
 }

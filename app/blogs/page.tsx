@@ -121,7 +121,7 @@ const FeedPage = () => {
         </div>
       </div>
       <div className="container py-4 md:py-8 flex flex-col md:flex-row">
-        <div className="flex-1 pr-4">
+        <div className="flex-[3_3_0%] pr-4">
           <div className="flex space-x-4 md:space-x-10">
             <button className="font-mono bg-gray-800 hover:bg-gray-700 px-2 md:px-4 py-2 rounded-md transition-colors">Personalised</button>
             <button className="font-mono bg-gray-800 hover:bg-gray-700 px-2 md:px-4 py-2 rounded-md transition-colors">Featured</button>
@@ -130,7 +130,7 @@ const FeedPage = () => {
             <Link key={blog.id} href={`/blogs/${blog.id}`}>
               <div className="blog-link ">
                 <div className="bg-gray-800 mt-4 shadow-md rounded-lg mb-4 flex border border-gray-700 hover:border-blue-800 card">
-                  <div className="w-24 md:w-32 mt-2 md:mt-3 h-24 md:h-32 bg-cover bg-center rounded-l-lg" style={{ backgroundImage: `url(${blog.thumbnail})` }} />
+                  <div className="w-24 md:w-32 mt-2 md:mt-3 h-24 md:h-32 bg-cover bg-center ml-1 rounded-lg" style={{ backgroundImage: `url(${blog.image})` }} />
                   <div className="p-4 flex-1">
                     <h3 className="text-lg md:text-xl font-medium mb-2 font-mono">{blog.title}</h3>
                     <p className="text-gray-400 mb-2 md:mb-4 font-mono">{blog.content && blog.content.length > 150 ? blog.content.slice(0, 150) + '...' : blog.content}</p>
@@ -147,7 +147,7 @@ const FeedPage = () => {
             </Link>
           ))}
         </div>
-        <div className="flex-1 mt-4 md:mt-0 ml-0 md:ml-8 pl-0 md:pl-8 border-gray-700">
+        <div className="flex-[2_2_0%] mt-4 md:mt-0 ml-0 md:ml-8 pl-0 md:pl-8 border-gray-700">
           <div className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 mb-4 border border-gray-700 flex">
             <div className="flex-1">
               <h3 className="text-lg font-medium mb-2 font-mono">Trending Articles</h3>
@@ -194,3 +194,7 @@ const FeedPage = () => {
 };
 
 export default FeedPage;
+
+function setBlogs(data: any) {
+  throw new Error('Function not implemented.');
+}

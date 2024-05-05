@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 const TiltingCard = () => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -52,6 +53,7 @@ const TiltingCard = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0"></div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-white text-center">
+              <Image src="/drait.jpeg" alt="Logo" width={100} height={100}  className=' ml-20 rounded-lg'/>
               <h2 className="text-2xl font-bold text-pink-600 drop-shadow-md">Dr AIT</h2>
               <p className="text-sm text-[#4DFFF9] drop-shadow-md">
                 Elevate your event experience with our cutting-edge platform
@@ -60,7 +62,7 @@ const TiltingCard = () => {
           </div>
         </div>
       </div>
-      <div className="w-2/5 h-full flex justify-center items-center hidden xl:visible bg-black md:flex flex-col xl:pr-32">
+      <div data-aos="fade-left" className="w-2/5 h-full flex justify-center items-center hidden xl:visible bg-black md:flex flex-col xl:pr-32">
         <div className="text-white text-left">
           <h2 className="text-2xl font-bold mb-4 text-white font-mono font-semibold">Discover the Future of Events</h2>
           <p className="text-gray-100 mt-3 font-mono">

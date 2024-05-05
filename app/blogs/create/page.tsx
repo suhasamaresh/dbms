@@ -1,35 +1,72 @@
 "use client";
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import firebase from "firebase/compat/app";
+import "firebase/compat/storage";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyALYX_9uj-byA0WYlvspCHCOxgFV6SFB4Q",
+  authDomain: "hackprojec-77a77.firebaseapp.com",
+  projectId: "hackprojec-77a77",
+  storageBucket: "hackprojec-77a77.appspot.com",
+  messagingSenderId: "452533063595",
+  appId: "1:452533063595:web:c70e8b64ce8a104ec50cee",
+  measurementId: "G-M5FLQZ1D3T",
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app(); // if already initialized, use that one
+}
+
+const storage = firebase.storage();
 
 const BlogCreation = () => {
   const [formData, setFormData] = useState({
-    title: '',
-    content: '',
+    title: "",
+    content: "",
     image: null,
-    author: '',
+    author: "",
     published: false,
-    authorId: '',
+    authorId: "",
     likes: 0,
     reads: 0,
   });
 
-  const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileUpload = (e: { target: { files: any[]; }; }) => {
+  const handleFileUpload = (e) => {
+    console.log("Selected files:", e.target.files); // Add this line for debugging
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/blogs', formData);
-      console.log('Blog created:', response.data);
+      // Ensure image file is present
+      if (!formData.image) {
+        throw new Error("Please select an image");
+      }
+
+      // Upload image to Firebase Storage
+      const imageRef = storage.ref().child(`images/${formData.image.name}`);
+      await imageRef.put(formData.image);
+
+      // Get image URL from Firebase Storage
+      const imageUrl = await imageRef.getDownloadURL();
+
+      // Include the image URL in formData
+      const updatedFormData = { ...formData, image: imageUrl };
+
+      // Make the POST request to create the blog
+      const response = await axios.post("/api/blogs", updatedFormData);
+      console.log("Blog created:", response.data);
     } catch (error) {
-      console.error('Error creating blog:', error);
+      console.error("Error creating blog:", error);
     }
   };
 
@@ -60,7 +97,9 @@ const BlogCreation = () => {
         <div className="relative -mb-px h-px w-full bg-gradient-to-r from-transparent via-sky-300 to-transparent"></div>
         <div className="mx-5 border dark:border-b-white/50 dark:border-t-white/50 border-b-white/20 sm:border-t-white/20 shadow-[20px_0_20px_20px] shadow-slate-500/10 dark:shadow-white/20 rounded-lg border-white/20 border-l-white/20 border-r-white/20 sm:shadow-sm lg:rounded-xl lg:shadow-none">
           <div className="flex flex-col p-8">
-            <h3 className="text-2xl font-semibold leading-6 tracking-tighter">Create a New Blog</h3>
+            <h3 className="text-2xl font-semibold leading-6 tracking-tighter">
+              Create a New Blog
+            </h3>
             <p className="mt-2 text-sm font-medium text-white/50">
               Fill in the details to publish a new blog post.
             </p>
@@ -162,7 +201,7 @@ const BlogCreation = () => {
                       type="file"
                       name="image"
                       className="block w-full border-0 bg-transparent p-0 text-base file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileUpload((e as any).target.files)}
+                      onChange={handleFileUpload}
                     />
                   </div>
                 </div>

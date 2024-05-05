@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -14,11 +15,12 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { title, content, author } = body;
+    const { title, content, author,image } = body;
     const newBlog = await prisma.blog.create({
       data: {
         title,
         content,
+        image,
         author,
         published: false, 
         authorId: "", 

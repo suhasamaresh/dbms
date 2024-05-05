@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-
+import { useSession } from 'next-auth/react';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   let timeout: NodeJS.Timeout | null = null;

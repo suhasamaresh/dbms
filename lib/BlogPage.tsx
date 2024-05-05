@@ -36,3 +36,12 @@ export async function Likeincrement({ id }: { id: string }) {
       },
     });
   }
+
+  export async function deleteBlog({ id }: { id: string }) {
+    // Fetch the blog data from the database
+    const blog = await prisma.blog.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+  }
