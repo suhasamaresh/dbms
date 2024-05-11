@@ -1,135 +1,285 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Vortex } from "@/components/vortex";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 
-export default function VortexDemo() {
-  const [eventType, setEventType] = useState("All");
-  const [sortType, setSortType] = useState("Latest");
-  const [events, setEvents] = useState([]);
-  const [visibleEvents, setVisibleEvents] = useState(6);
+interface Event {
+  id: string;
+  title: string;
+  date: string;
+  description: string;
+  attendees: number;
+  sponsors: number;
+  author: string;
+  isOnline: boolean;
+}
 
-  // Function to fetch events from the API
+interface TrendingEvent {
+  id: string;
+  title: string;
+  thumbnail: string;
+  attendees: number;
+  sponsors: number;
+  isOnline: boolean;
+}
+
+interface Bookmark {
+  id: string;
+  title: string;
+  thumbnail: string;
+  image: string; // New property for the image
+}
+
+interface Challenge {
+  id: string;
+  title: string;
+  thumbnail: string;
+  image: string; // New property for the image
+}
+
+const FeedPage = () => {
+  const [activeTab, setActiveTab] = useState<"personalized" | "features">(
+    "personalized"
+  );
+  const [events, setEvents] = useState<Event[]>([]);
+  const [data, setData] = useState<any[]>([]); // Changed data to blogs
+
   useEffect(() => {
-    async function fetchEvents() {
+    const fetchEvents = async () => {
       try {
-        const response = await axios.get("/api/events");
-        if (response.data && Array.isArray(response.data.events)) {
-          setEvents(response.data.events);
-        } else {
-          console.error("Invalid events data:", response.data);
-        }
+        const response = await fetch("/api/events");
+        const data = await response.json();
+        setData(data);
+        setEvents(data);
       } catch (error) {
         console.error("Error fetching events:", error);
       }
-    }
+    };
     fetchEvents();
-  }, []); // Empty dependency array ensures the effect runs only once when component mounts
+  }, []);
 
-  // Function to handle event type dropdown change
-  const handleEventTypeChange = (e) => {
-    setEventType(e.target.value);
-  };
+  const trendingEvents: TrendingEvent[] = [
+    {
+      id: "1",
+      title: "The Future of Web Development",
+      thumbnail: "https://example.com/trending-event-1.jpg",
+      attendees: 2345,
+      sponsors: 10,
+      isOnline: true,
+    },
+    {
+      id: "2",
+      title: "Mastering Serverless Architecture",
+      thumbnail: "https://example.com/trending-event-2.jpg",
+      attendees: 1678,
+      sponsors: 8,
+      isOnline: false,
+    },
+    {
+      id: "3",
+      title: "Exploring the Potential of Blockchain",
+      thumbnail: "https://example.com/trending-event-3.jpg",
+      attendees: 987,
+      sponsors: 5,
+      isOnline: true,
+    },
+  ];
 
-  // Function to handle sorting dropdown change
-  const handleSortTypeChange = (e) => {
-    setSortType(e.target.value);
-  };
+  const bookmarks: Bookmark[] = [
+    {
+      id: "1",
+      title: "Building Scalable Web Applications",
+      thumbnail: "/next.svg",
+      image: "https://example.com/bookmark-image-1.jpg",
+    },
+    {
+      id: "2",
+      title: "Optimizing Website Performance",
+      thumbnail: "https://example.com/bookmark-2.jpg",
+      image: "https://example.com/bookmark-image-2.jpg",
+    },
+  ];
 
-  // Function to handle "See more" button click
-  const handleSeeMore = () => {
-    setVisibleEvents((prevVisibleEvents) => prevVisibleEvents + 6);
-  };
+  const challenges: Challenge[] = [
+    {
+      id: "1",
+      title: "Hacktoberfest 2023",
+      thumbnail: "https://example.com/challenge-1.jpg",
+      image: "https://example.com/challenge-image-1.jpg",
+    },
+    {
+      id: "2",
+      title: "Weekly Coding Challenge",
+      thumbnail: "https://example.com/challenge-2.jpg",
+      image: "https://example.com/challenge-image-2.jpg",
+    },
+  ];
 
   return (
-    <div className="w-full mx-auto min-h-screen overflow-hidden bg-black text-white mt-16">
-      <Vortex
-        backgroundColor="black"
-        className="flex flex-col shrink items-center justify-center"
-      >
-        <div className="w-full mx-auto h-[21rem] mt-16 overflow-hidden">
-          <div className="flex flex-col items-center justify-center space-y-6">
-            {/* Heading */}
-            <h2 className="text-[#C0C0C0] text-2xl md:text-6xl font-mono text-center pt-10">
-              Events and Webinars
-            </h2>
-            <p className="text-white text-sm md:text-xl max-w-xl mt-6 text-center font-mono">
-              Connect with experts, both online and in-person, and gain valuable
-              insights.
-            </p>
-            {/* View Events Button */}
-            <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-200 group-hover:duration-200"></div>
-              <button
-                type="submit"
-                className="relative px-7 py-4 bg-black rounded-lg leading-none flex items-center divide-x divide-gray-600"
-              >
-                <span className="flex items-center space-x-5 ">
-                  <span className="text-gray-100 font-semibold font-mono">
-                    View Events
-                  </span>
-                </span>
-              </button>
-            </div>
-            {/* Event Filters */}
+    <div className="bg-black min-h-screen text-white pl-4 pr-4 md:pl-32 md:pr-32 font-mono">
+      <div className="bg-gray-800 shadow-md py-4 border-b border-gray-700">
+        <div className="container mx-auto flex justify-center space-x-8">
+          <button
+            className={`font-medium flex items-center bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-md transition-colors ${
+              activeTab === "personalized" ? "text-blue-500" : "text-gray-400"
+            }`}
+            onClick={() => setActiveTab("personalized")}
+          >
+            <img
+              src="/personalized.svg"
+              alt="Personalized"
+              className="mr-2 w-6 h-6"
+            />
+            <span className="font-mono">Personalized</span>
+          </button>
+          <button
+            className={`font-medium flex items-center bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-md transition-colors ${
+              activeTab === "features" ? "text-blue-500" : "text-gray-400"
+            }`}
+            onClick={() => setActiveTab("features")}
+          >
+            <img src="/features.svg" alt="Features" className="mr-2 w-6 h-6" />
+            <span className="font-mono">Features</span>
+          </button>
+        </div>
+      </div>
+      <div className="container py-4 md:py-8 flex flex-col md:flex-row">
+        <div className="flex-[3_3_0%] pr-4">
+          <div className="flex space-x-4 md:space-x-10">
+            <button className="font-mono bg-gray-800 hover:bg-gray-700 px-2 md:px-4 py-2 rounded-md transition-colors">
+              Personalised
+            </button>
+            <button className="font-mono bg-gray-800 hover:bg-gray-700 px-2 md:px-4 py-2 rounded-md transition-colors">
+              Featured
+            </button>
           </div>
-        </div>
-        {/* Event Cards */}
-        <div className="flex items-center justify-center space-x-6">
-          {/* Event Type Dropdown */}
-          <select
-            className="bg-black text-white px-3 py-2 rounded-md"
-            value={eventType}
-            onChange={handleEventTypeChange}
-          >
-            <option value="All">All</option>
-            <option value="In-person">In-person</option>
-            <option value="Online Webinar">Online Webinar</option>
-          </select>
-          {/* Sorting Dropdown */}
-          <select
-            className="bg-black text-white px-3 py-2 rounded-md"
-            value={sortType}
-            onChange={handleSortTypeChange}
-          >
-            <option value="Latest">Latest</option>
-            <option value="Oldest">Oldest</option>
-          </select>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          {events
-            .filter((event) => eventType === "All" || event.type === eventType)
-            .sort((a, b) =>
-              sortType === "Latest"
-                ? new Date(b.deadline) - new Date(a.deadline)
-                : new Date(a.deadline) - new Date(b.deadline)
-            )
-            .slice(0, visibleEvents)
-            .map((event) => (
-              <div key={event.id} className="bg-white rounded-md p-4">
-                <h3 className="text-xl font-semibold">{event.title}</h3>
-                <p className="text-sm text-gray-600">
-                  Deadline: {event.Deadline}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Description: {event.description}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Location: {event.location}
-                </p>
-              </div>
+          {data.events &&
+            data.events.map((event) => (
+              <Link key={event.id} href={`/events/${event.id}`}>
+                <div className="event-link">
+                  <div className="bg-gray-800 mt-4 shadow-md rounded-lg mb-4 flex border border-gray-700 hover:border-blue-800 card">
+                    <div className="p-4 flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg md:text-xl font-medium font-mono">
+                          {event.title}
+                        </h3>
+                        {event.Online ? (
+                          <div className="flex items-center">
+                            <div
+                              className="bg-green-500 rounded-full w-3 h-3 mr-2"
+                              title="Online"
+                            ></div>
+                            <span className="text-gray-400 text-sm font-mono">
+                              Online
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center">
+                            <div
+                              className="bg-blue-500 rounded-full w-3 h-3 mr-2"
+                              title="Offline"
+                            ></div>
+                            <span className="text-gray-400 text-sm font-mono">
+                              Offline
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-gray-400 mb-2 md:mb-4 font-mono">
+                        {event.description && event.description.length > 150
+                          ? event.description.slice(0, 150) + "..."
+                          : event.description}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="text-gray-400 text-sm font-mono">
+                          <span className="mr-2">
+                            {event.attendees} attendees
+                          </span>
+                          <span>{event.sponsors} sponsors</span>
+                        </div>
+                        <div className="text-gray-400 text-sm font-mono">
+                          {event.author}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Link>
             ))}
         </div>
-        {/* See More Button */}
-        {visibleEvents < events.length && (
-          <button
-            className="mt-6 px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition duration-300"
-            onClick={handleSeeMore}
-          >
-            See More
-          </button>
-        )}
-      </Vortex>
+        <div className="flex-[2_2_0%] mt-4 md:mt-0 ml-0 md:ml-8 pl-0 md:pl-8 border-gray-700">
+          <div className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 mb-4 border border-gray-700 flex">
+            <div className="flex-1">
+              <h3 className="text-lg font-medium mb-2 font-mono">
+                Trending Events
+              </h3>
+              {trendingEvents.map((event) => (
+                <div key={event.id} className="flex items-center mb-2">
+                  <div
+                    className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg mr-2 md:mr-4"
+                    style={{ backgroundImage: `url(${event.thumbnail})` }}
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-gray-400 font-medium text-sm md:text-base font-mono">
+                        {event.title}
+                      </h4>
+                      {event.isOnline ? (
+                        <div
+                          className="bg-green-500 rounded-full w-3 h-3 mr-2"
+                          title="Online"
+                        ></div>
+                      ) : (
+                        <div
+                          className="bg-blue-500 rounded-full w-3 h-3 mr-2"
+                          title="Offline"
+                        ></div>
+                      )}
+                    </div>
+                    <div className="text-gray-400 text-xs md:text-sm font-mono">
+                      <span className="mr-2">{event.attendees} attendees</span>
+                      <span>{event.sponsors} sponsors</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 mb-4 border border-gray-700 flex">
+            <div className="flex-1">
+              <h3 className="text-lg font-medium mb-2 font-mono">Bookmarks</h3>
+              {bookmarks.map((bookmark) => (
+                <div key={bookmark.id} className="flex items-center mb-2">
+                  <div
+                    className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg mr-2 md:mr-4"
+                    style={{ backgroundImage: `url(${bookmark.thumbnail})` }}
+                  />
+                  <h4 className="text-gray-400 font-medium text-sm md:text-base font-mono">
+                    {bookmark.title}
+                  </h4>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 border border-gray-700 flex">
+            <div className="flex-1">
+              <h3 className="text-lg font-medium mb-2 font-mono">Challenges</h3>
+              {challenges.map((challenge) => (
+                <div key={challenge.id} className="flex items-center mb-2">
+                  <div
+                    className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg mr-2 md:mr-4"
+                    style={{ backgroundImage: `url(${challenge.thumbnail})` }}
+                  />
+                  <h4 className="text-gray-400 font-medium text-sm md:text-base font-mono">
+                    {challenge.title}
+                  </h4>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default FeedPage;
