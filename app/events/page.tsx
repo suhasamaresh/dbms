@@ -3,6 +3,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 interface Event {
+  Online: any;
   id: string;
   title: string;
   date: string;
@@ -42,6 +43,11 @@ const FeedPage = () => {
   );
   const [events, setEvents] = useState<Event[]>([]);
   const [data, setData] = useState<any[]>([]); // Changed data to blogs
+  const [visibleEvents, setVisibleEvents] = useState<number>(6); // New state for visible events
+
+  const handleShowMore = () => {
+    setVisibleEvents((prevVisibleEvents) => prevVisibleEvents + 6); // Increment visible events count by 6
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -49,7 +55,7 @@ const FeedPage = () => {
         const response = await fetch("/api/events");
         const data = await response.json();
         setData(data);
-        setEvents(data);
+        setEvents(data.events || []); // Check if data.events exists, otherwise initialize as empty array
       } catch (error) {
         console.error("Error fetching events:", error);
       }
@@ -113,6 +119,7 @@ const FeedPage = () => {
       image: "https://example.com/challenge-image-2.jpg",
     },
   ];
+  
 
   return (
     <div className="bg-black min-h-screen text-white pl-4 pr-4 md:pl-32 md:pr-32 font-mono">
@@ -137,63 +144,48 @@ const FeedPage = () => {
             }`}
             onClick={() => setActiveTab("features")}
           >
-            <img src="/features.svg" alt="Features" className="mr-2 w-6 h-6" />
+            <img
+              src="/features.svg"
+              alt="Features"
+              className="mr-2 w-6 h-6"
+            />
             <span className="font-mono">Features</span>
           </button>
         </div>
       </div>
-      <div className="container py-4 md:py-8 flex flex-col md:flex-row">
-        <div className="flex-[3_3_0%] pr-4">
-          <div className="flex space-x-4 md:space-x-10">
-            <button className="font-mono bg-gray-800 hover:bg-gray-700 px-2 md:px-4 py-2 rounded-md transition-colors">
-              Personalised
-            </button>
-            <button className="font-mono bg-gray-800 hover:bg-gray-700 px-2 md:px-4 py-2 rounded-md transition-colors">
-              Featured
-            </button>
-          </div>
-          {data.events &&
-            data.events.map((event) => (
+      <div className="container py-4 md:py-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {Array.isArray(events) &&
+            events.slice(0, visibleEvents).map((event) => (
               <Link key={event.id} href={`/events/${event.id}`}>
-                <div className="event-link">
+                <div className="event-link overflow-hidden">
                   <div className="bg-gray-800 mt-4 shadow-md rounded-lg mb-4 flex border border-gray-700 hover:border-blue-800 card">
                     <div className="p-4 flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="text-lg md:text-xl font-medium font-mono">
                           {event.title}
                         </h3>
-                        {event.Online ? (
-                          <div className="flex items-center">
-                            <div
-                              className="bg-green-500 rounded-full w-3 h-3 mr-2"
-                              title="Online"
-                            ></div>
-                            <span className="text-gray-400 text-sm font-mono">
-                              Online
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center">
-                            <div
-                              className="bg-blue-500 rounded-full w-3 h-3 mr-2"
-                              title="Offline"
-                            ></div>
-                            <span className="text-gray-400 text-sm font-mono">
-                              Offline
-                            </span>
-                          </div>
-                        )}
+                        <div className="flex items-center">
+                          <div
+                            className={`bg-${
+                              event.Online ? "green" : "blue"
+                            }-500 rounded-full w-3 h-3 mr-2`}
+                            title={event.Online ? "Online" : "Offline"}
+                          ></div>
+                          <span className="text-gray-400 text-sm font-mono">
+                            {event.Online ? "Online" : "Offline"}
+                          </span>
+                        </div>
                       </div>
                       <p className="text-gray-400 mb-2 md:mb-4 font-mono">
-                        {event.description && event.description.length > 150
+                        {event.description &&
+                        event.description.length > 150
                           ? event.description.slice(0, 150) + "..."
                           : event.description}
                       </p>
                       <div className="flex items-center justify-between">
                         <div className="text-gray-400 text-sm font-mono">
-                          <span className="mr-2">
-                            {event.attendees} attendees
-                          </span>
+                          <span className="mr-2">{event.attendees} attendees</span>
                           <span>{event.sponsors} sponsors</span>
                         </div>
                         <div className="text-gray-400 text-sm font-mono">
@@ -206,75 +198,60 @@ const FeedPage = () => {
               </Link>
             ))}
         </div>
-        <div className="flex-[2_2_0%] mt-4 md:mt-0 ml-0 md:ml-8 pl-0 md:pl-8 border-gray-700">
-          <div className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 mb-4 border border-gray-700 flex">
-            <div className="flex-1">
-              <h3 className="text-lg font-medium mb-2 font-mono">
-                Trending Events
-              </h3>
-              {trendingEvents.map((event) => (
+        {events.length > visibleEvents && (
+          <button onClick={handleShowMore} className="bg-gray-800 text-white font-mono py-2 px-4 mt-4 rounded-md hover:bg-gray-700">
+            Show More
+          </button>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+          <div className="bg-gray-800 shadow-md rounded-lg p-4 border border-gray-700 flex flex-col">
+            <h3 className="text-lg font-medium mb-4 font-mono">Featured Events</h3>
+            {data.featuredEvents &&
+              data.featuredEvents.map((event) => (
                 <div key={event.id} className="flex items-center mb-2">
                   <div
                     className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg mr-2 md:mr-4"
                     style={{ backgroundImage: `url(${event.thumbnail})` }}
                   />
                   <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-gray-400 font-medium text-sm md:text-base font-mono">
-                        {event.title}
-                      </h4>
-                      {event.isOnline ? (
-                        <div
-                          className="bg-green-500 rounded-full w-3 h-3 mr-2"
-                          title="Online"
-                        ></div>
-                      ) : (
-                        <div
-                          className="bg-blue-500 rounded-full w-3 h-3 mr-2"
-                          title="Offline"
-                        ></div>
-                      )}
-                    </div>
-                    <div className="text-gray-400 text-xs md:text-sm font-mono">
-                      <span className="mr-2">{event.attendees} attendees</span>
-                      <span>{event.sponsors} sponsors</span>
-                    </div>
+                    <h4 className="text-gray-400 font-medium text-sm md:text-base font-mono">
+                      {event.title}
+                    </h4>
                   </div>
                 </div>
               ))}
-            </div>
           </div>
-          <div className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 mb-4 border border-gray-700 flex">
-            <div className="flex-1">
-              <h3 className="text-lg font-medium mb-2 font-mono">Bookmarks</h3>
-              {bookmarks.map((bookmark) => (
-                <div key={bookmark.id} className="flex items-center mb-2">
-                  <div
-                    className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg mr-2 md:mr-4"
-                    style={{ backgroundImage: `url(${bookmark.thumbnail})` }}
-                  />
+          <div className="bg-gray-800 shadow-md rounded-lg p-4 border border-gray-700 flex flex-col">
+            <h3 className="text-lg font-medium mb-4 font-mono">Trending Events</h3>
+            {trendingEvents.map((event) => (
+              <div key={event.id} className="flex items-center mb-2">
+                <div
+                  className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg mr-2 md:mr-4"
+                  style={{ backgroundImage: `url(${event.thumbnail})` }}
+                />
+                <div className="flex-1">
                   <h4 className="text-gray-400 font-medium text-sm md:text-base font-mono">
-                    {bookmark.title}
+                    {event.title}
                   </h4>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-          <div className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 border border-gray-700 flex">
-            <div className="flex-1">
-              <h3 className="text-lg font-medium mb-2 font-mono">Challenges</h3>
-              {challenges.map((challenge) => (
-                <div key={challenge.id} className="flex items-center mb-2">
-                  <div
-                    className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg mr-2 md:mr-4"
-                    style={{ backgroundImage: `url(${challenge.thumbnail})` }}
-                  />
+          <div className="bg-gray-800 shadow-md rounded-lg p-4 border border-gray-700 flex flex-col">
+            <h3 className="text-lg font-medium mb-4 font-mono">Challenges</h3>
+            {challenges.map((challenge) => (
+              <div key={challenge.id} className="flex items-center mb-2">
+                <div
+                  className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg mr-2 md:mr-4"
+                  style={{ backgroundImage: `url(${challenge.thumbnail})` }}
+                />
+                <div className="flex-1">
                   <h4 className="text-gray-400 font-medium text-sm md:text-base font-mono">
                     {challenge.title}
                   </h4>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

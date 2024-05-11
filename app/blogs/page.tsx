@@ -27,6 +27,8 @@ interface Challenge {
 const FeedPage = () => {
   const [activeTab, setActiveTab] = useState<'personalized' | 'features'>('personalized');
   const [data, setData] = useState<any[]>([]); // Changed data to blogs 
+  const [challengesSectionHeight, setChallengesSectionHeight] = useState<number>(0);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +42,11 @@ const FeedPage = () => {
       }
     };
     fetchData();
+
+    const challengesSection = document.getElementById('challenges-section');
+    if (challengesSection) {
+      setChallengesSectionHeight(challengesSection.clientHeight);
+    }
   }, []); // Added dependency array to useEffect
 
   const trendingArticles: TrendingArticle[] = [
@@ -147,7 +154,7 @@ const FeedPage = () => {
             </Link>
           ))}
         </div>
-        <div className="flex-[2_2_0%] mt-4 md:mt-0 ml-0 md:ml-8 pl-0 md:pl-8 border-gray-700">
+        <div className="flex-[2_2_0%] mt-4 md:mt-0 ml-0 md:ml-8 pl-0 md:pl-8 border-gray-700  " style={{ maxHeight: challengesSectionHeight }}>
           <div className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 mb-4 border border-gray-700 flex">
             <div className="flex-1">
               <h3 className="text-lg font-medium mb-2 font-mono">Trending Articles</h3>
@@ -175,7 +182,7 @@ const FeedPage = () => {
             </div>
             <div className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg ml-2 md:ml-4" style={{ backgroundImage: `url(${bookmarks[0].image})` }} />
           </div>
-          <div className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 border border-gray-700 flex">
+          <div id="challenges-section" className="bg-gray-800 shadow-md rounded-lg p-2 md:p-4 border border-gray-700 flex">
             <div className="flex-1">
               <h3 className="text-lg font-medium mb-2 font-mono">Challenges</h3>
               {challenges.map((challenge) => (
