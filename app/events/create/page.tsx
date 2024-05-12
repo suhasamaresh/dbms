@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
-import firebase from "firebase/compat/app";
-import "firebase/compat/storage";
 
 const EventCreation = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +10,8 @@ const EventCreation = () => {
     deadline: "",
     location: "",
     isOnline: false,
+    registrationLink: "",
+    sponsors: [], // Change sponsors to an array
   });
 
   const convertDateToTimestamp = (date) => {
@@ -37,7 +37,13 @@ const EventCreation = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (name === "sponsors") {
+      var temp = new Array();
+      temp = value.split(",");
+      setFormData({ ...formData, [name]: temp });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleDeadlineChange = (e) => {
@@ -211,6 +217,48 @@ const EventCreation = () => {
                   />
                   <span className="text-sm">Online Event</span>
                 </label>
+              </div>
+
+              {/* Registration Link */}
+              <div className="mt-6">
+                <div>
+                  <div className="group relative rounded-lg border focus-within:border-sky-200 px-4 pb-2 pt-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
+                    <div className="flex justify-between">
+                      <label className="text-sm font-medium text-muted-foreground group-focus-within:text-white text-gray-400">
+                        Registration Link
+                      </label>
+                    </div>
+                    <input
+                      type="text"
+                      name="registrationLink"
+                      placeholder="Registration Link"
+                      autoComplete="off"
+                      className="block w-full border-0 bg-transparent p-0 text-base file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Sponsors */}
+              <div className="mt-6">
+                <div>
+                  <div className="group relative rounded-lg border focus-within:border-sky-200 px-4 pb-2 pt-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
+                    <div className="flex justify-between">
+                      <label className="text-sm font-medium text-muted-foreground group-focus-within:text-white text-gray-400">
+                        Sponsors
+                      </label>
+                    </div>
+                    <input
+                      type="text"
+                      name="sponsors"
+                      placeholder="Sponsors (comma-separated)"
+                      autoComplete="off"
+                      className="block w-full border-0 bg-transparent p-0 text-base file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Submit Button */}

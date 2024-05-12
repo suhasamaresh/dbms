@@ -95,7 +95,7 @@ model blog {
 }
 
 model events {
-  id        String   @id @default(cuid())
+  id       Int  @id @default(autoincrement())
   title     String
   description   String
   organizer String
@@ -104,4 +104,6 @@ model events {
   Deadline String
   location String
   Online Boolean
+  registrationLink String
+  sponsors String
 }

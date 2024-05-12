@@ -14,7 +14,7 @@ export async function GET() {
 export async function POST(req: any) {
     try {
         const body = await req.json();
-        const { title, description, organizer, deadline, location, isOnline } = body;
+        const { title, description, organizer, deadline, location, isOnline ,registrationLink, sponsors } = body;
         
         // Convert the deadline to a Unix timestamp
         const deadlineTimestamp = new Date(deadline).getTime().toString();
@@ -23,6 +23,8 @@ export async function POST(req: any) {
         if (isOnline === true) {
             check = true;
         }
+        console.log(registrationLink);
+        console.log(sponsors);
         
         const res = await prisma.events.create({
             data: {
@@ -31,7 +33,9 @@ export async function POST(req: any) {
                 organizer,
                 Deadline: deadlineTimestamp,
                 location,
-                Online: check // Assuming the field in the database is named 'online'
+                Online: check,
+                registrationLink,
+                sponsors, 
             }
         });
 
