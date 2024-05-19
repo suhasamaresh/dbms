@@ -1,15 +1,14 @@
 import Hero from "@/components/Hero";
-import { BackgroundCellAnimation } from "@/components/Ripple";
+import AboutUs from "@/components/about";
+
 import BlogCards from "@/components/blog";
-import MostPopularBlogs from "@/components/blog";
-import Explore from "@/components/explore";
-import FeaturedEvents from "@/components/explore";
-import Image from "next/image";
+import EventsPage from "@/components/eventcards";
+
 
 export default function Home() {
   return (
     <div className="bg-[#1a1a1a] ">
-      <Hero />  <BlogCards /> 
+      <Hero /><AboutUs/> <BlogCards /> <EventsPage/>
     </div>
   );
 }

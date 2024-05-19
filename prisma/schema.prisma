@@ -106,4 +106,7 @@ model events {
   Online Boolean
   registrationLink String
   sponsors String
+  type String
 }
+
+

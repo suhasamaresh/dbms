@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
@@ -20,31 +20,41 @@ const TiltingCard = () => {
         setRotateX(offsetX);
         setRotateY(-offsetY);
 
-        // Rotate the background gradient with the same degree as the card
         backgroundRef.current.style.transform = `perspective(5000px) rotateX(${offsetY}deg) rotateY(${offsetX}deg) translateZ(-50px)`;
       }
     };
 
+    const handleScroll = () => {
+      const rect = cardRef.current?.getBoundingClientRect();
+      if (rect) {
+        const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+        window.dispatchEvent(new CustomEvent('card-scroll', { detail: { isVisible } }));
+      }
+    };
+
     document.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('scroll', handleScroll);
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
   return (
     <div className="md:flex w-full h-screen justify-between bg-black pl-40 xl:pl-0">
-      <div className="w-3/5 h-full flex justify-center items-center ">
+      <div className="w-3/5 h-full flex justify-center items-center relative z-30">
         <div
           ref={backgroundRef}
           className="absolute w-80 h-80 bg-gradient-to-r from-[#08f] to-[#4DFFF9] rounded-lg opacity-50 transition-transform"
           style={{
             transform: `perspective(5000px) rotateX(${rotateY}deg) rotateY(${rotateX}deg) translateZ(-50px)`,
+            zIndex: 20,
           }}
         />
         <div
           ref={cardRef}
-          className="relative w-64 h-64 bg-black rounded-lg overflow-hidden transition-transform shadow-[0_0_2px_#fff,inset_0_0_2px_#fff,0_0_5px_#08f,0_0_15px_#08f,0_0_30px_#08f]"
+          className="relative w-64 h-64 bg-black rounded-lg overflow-hidden transition-transform shadow-[0_0_2px_#fff,inset_0_0_2px_#fff,0_0_5px_#08f,0_0_15px_#08f,0_0_30px_#08f] z-40"
           style={{
             transform: `perspective(5000px) rotateX(${rotateY}deg) rotateY(${rotateX}deg)`,
             transformStyle: `preserve-3d`,
@@ -53,7 +63,7 @@ const TiltingCard = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0"></div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-white text-center">
-              <Image src="/drait.jpeg" alt="Logo" width={100} height={100}  className=' ml-20 rounded-lg'/>
+              <Image src="/drait.jpeg" alt="Logo" width={100} height={100} className="lg:ml-20 ml-12 rounded-lg " />
               <h2 className="text-2xl font-bold text-pink-600 drop-shadow-md">Dr AIT</h2>
               <p className="text-sm text-[#4DFFF9] drop-shadow-md">
                 Elevate your event experience with our cutting-edge platform
@@ -64,13 +74,13 @@ const TiltingCard = () => {
       </div>
       <div data-aos="fade-left" className="w-2/5 h-full flex justify-center items-center hidden xl:visible bg-black md:flex flex-col xl:pr-32">
         <div className="text-white text-left">
-          <h2 className="text-2xl font-bold mb-4 text-white font-mono font-semibold">Discover the Future of Events</h2>
+          <h2 className="text-2xl font-bold mb-4 font-mono font-semibold text-green-500">Discover the Future of Events</h2>
           <p className="text-gray-100 mt-3 font-mono">
             Dr AIT's event management platform offers a seamless and innovative solution for your event needs. Streamline your planning, engage your
             attendees, and elevate your events to new heights. Experience the power of cutting-edge technology and unparalleled service.
           </p>
         </div>
-        <div className="relative group mt-7 ">
+        <div className="relative group mt-7 z-10">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-[#08f] to-[#4DFFF9] rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-200 group-hover:duration-200"></div>
           <button
             type="submit"

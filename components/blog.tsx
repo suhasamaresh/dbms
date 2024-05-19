@@ -25,7 +25,7 @@ const App: React.FC = () => {
   return (
     <div className="bg-black min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-white text-center text-3xl font-bold mb-8 font-mono">
+        <h1 className="text-green-500 text-center text-3xl font-bold mb-8 font-mono">
           Explore some of the blogs
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8  ">

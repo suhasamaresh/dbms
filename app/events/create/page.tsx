@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
+import { z } from "zod";
 
 const EventCreation = () => {
   const [formData, setFormData] = useState({
@@ -11,44 +12,25 @@ const EventCreation = () => {
     location: "",
     isOnline: false,
     registrationLink: "",
-    sponsors: [], // Change sponsors to an array
+    sponsors: "",
+    termsAndConditions: false,
   });
 
   const convertDateToTimestamp = (date) => {
-    // Convert the date string to a Date object
     const dateObject = new Date(date);
-
-    // Check if the conversion was successful
-    if (isNaN(dateObject.getTime())) {
-      console.error("Invalid date:", date);
-      return null; // Or handle the error as appropriate
-    }
-
-    // Calculate the timestamp
     const timestamp = Math.floor(dateObject.getTime() / 1000);
-    console.log("Timestamp:", timestamp);
-
-    // Update the form data
-    setFormData({ ...formData, deadline: timestamp.toString() });
-
-    // Return the timestamp
     return timestamp;
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "sponsors") {
-      var temp = new Array();
-      temp = value.split(",");
-      setFormData({ ...formData, [name]: temp });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
   };
 
   const handleDeadlineChange = (e) => {
     const { value } = e.target;
-    convertDateToTimestamp(value);
+    const timestamp = convertDateToTimestamp(value);
+    setFormData({ ...formData, deadline: timestamp });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleCheckboxChange = (e) => {
@@ -58,9 +40,12 @@ const EventCreation = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.termsAndConditions) {
+      console.error("Please accept the terms and conditions.");
+      return;
+    }
+    
     try {
-      // Make the POST request to create the event
-      console.log(formData);
       const response = await axios.post("/api/events", formData);
       console.log("Event created:", response.data);
     } catch (error) {
@@ -68,28 +53,33 @@ const EventCreation = () => {
     }
   };
 
+  const eventSchema = z.object({
+    title: z.string().nonempty(),
+    description: z.string().nonempty(),
+    organizer: z.string().nonempty(),
+    deadline: z.number().int().min(0),
+    location: z.string().nonempty(),
+    registrationLink: z.string().url().optional(),
+    sponsors: z.string().nonempty(),
+    termsAndConditions: z.boolean(),
+  });
+
+  const validate = (data) => {
+    try {
+      eventSchema.parse(data);
+      return true;
+    } catch (error) {
+      console.error("Validation error:", error);
+      return false;
+    }
+  };
+
   return (
     <div className="bg-black text-white flex min-h-screen flex-col items-center pt-32 sm:justify-center sm:pt-0">
-      {/* Header */}
       <div className="text-foreground font-semibold text-2xl tracking-tighter mx-auto flex items-center gap-2">
-        {/* Header Icon */}
-        <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            {/* SVG Path */}
-          </svg>
-        </div>
-        {/* Header Title */}
         Event Creation
       </div>
 
-      {/* Form */}
       <div className="relative mt-16 w-full max-w-2xl sm:mt-10">
         <div className="relative -mb-px h-px w-full bg-gradient-to-r from-transparent via-sky-300 to-transparent"></div>
         <div className="mx-5 border dark:border-b-white/50 dark:border-t-white/50 border-b-white/20 sm:border-t-white/20 shadow-[20px_0_20px_20px] shadow-slate-500/10 dark:shadow-white/20 rounded-lg border-white/20 border-l-white/20 border-r-white/20 sm:shadow-sm lg:rounded-xl lg:shadow-none">
@@ -103,7 +93,6 @@ const EventCreation = () => {
           </div>
           <div className="p-8 pt-0">
             <form onSubmit={handleSubmit}>
-              {/* Title */}
               <div className="mt-6">
                 <div>
                   <div className="group relative rounded-lg border focus-within:border-sky-200 px-4 pb-2 pt-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
@@ -119,12 +108,12 @@ const EventCreation = () => {
                       autoComplete="off"
                       className="block w-full border-0 bg-transparent p-0 text-base file:my-1 file:rounded-full file:border-0 file:bg-accent file:px-4 file:py-2 file:font-medium placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 sm:leading-7 text-foreground"
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Description */}
               <div className="mt-6">
                 <div>
                   <div className="group relative rounded-lg border focus-within:border-sky-200 px-4 pb-2 pt-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
@@ -138,12 +127,12 @@ const EventCreation = () => {
                       placeholder="Event Description"
                       className="block w-full border-0 bg-transparent p-0 text-base file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground"
                       onChange={handleInputChange}
+                      required
                     ></textarea>
                   </div>
                 </div>
               </div>
 
-              {/* Organizer */}
               <div className="mt-6">
                 <div>
                   <div className="group relative rounded-lg border focus-within:border-sky-200 px-4 pb-2 pt-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
@@ -159,12 +148,12 @@ const EventCreation = () => {
                       autoComplete="off"
                       className="block w-full border-0 bg-transparent p-0 text-base file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground"
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Deadline */}
               <div className="mt-6">
                 <div>
                   <div className="group relative rounded-lg border focus-within:border-sky-200 px-4 pb-2 pt-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
@@ -180,12 +169,12 @@ const EventCreation = () => {
                       autoComplete="off"
                       className="block w-full border-0 bg-transparent p-0 text-base file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground"
                       onChange={handleDeadlineChange}
+                      required
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Location */}
               <div className="mt-6">
                 <div>
                   <div className="group relative rounded-lg border focus-within:border-sky-200 px-4 pb-2 pt-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
@@ -201,12 +190,12 @@ const EventCreation = () => {
                       autoComplete="off"
                       className="block w-full border-0 bg-transparent p-0 text-base file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground"
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Online Checkbox */}
               <div className="mt-6 flex items-center justify-between">
                 <label className="flex items-center gap-2">
                   <input
@@ -219,7 +208,6 @@ const EventCreation = () => {
                 </label>
               </div>
 
-              {/* Registration Link */}
               <div className="mt-6">
                 <div>
                   <div className="group relative rounded-lg border focus-within:border-sky-200 px-4 pb-2 pt-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
@@ -240,7 +228,6 @@ const EventCreation = () => {
                 </div>
               </div>
 
-              {/* Sponsors */}
               <div className="mt-6">
                 <div>
                   <div className="group relative rounded-lg border focus-within:border-sky-200 px-4 pb-2 pt-3 duration-200 focus-within:ring focus-within:ring-sky-300/30">
@@ -256,12 +243,30 @@ const EventCreation = () => {
                       autoComplete="off"
                       className="block w-full border-0 bg-transparent p-0 text-base file:my-1 placeholder:text-muted-foreground/90 focus:outline-none focus:ring-0 focus:ring-teal-500 sm:leading-7 text-foreground"
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Submit Button */}
+              <div className="mt-6 flex items-center justify-between">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="termsAndConditions"
+                    className="outline-none focus:outline focus:outline-sky-300"
+                    onChange={handleCheckboxChange}
+                    required
+                  />
+                  <span className="text-sm">
+                    I agree to the{" "}
+                    <a href="/termsandconditions" className="text-blue-500">
+                      Terms and Conditions
+                    </a>
+                  </span>
+                </label>
+              </div>
+
               <div className="mt-6 flex items-center justify-end gap-x-4">
                 <button
                   className="font-semibold hover:bg-black hover:text-white hover:ring hover:ring-white transition duration-300 inline-flex items-center justify-center rounded-md text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-black h-12 px-6 py-2"

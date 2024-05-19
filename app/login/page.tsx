@@ -1,23 +1,27 @@
 "use client";
-import Workspace from "@/components/workspace";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 const Login: React.FC = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleLogin = async (e: { preventDefault: () => void }) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const signInData = await signIn("credentials", {
-      email,
-      password,
-      redirect: true,
-    })
-    console.log(signInData);
-    router.push("/dashboard");
+    const result = await signIn("credentials", {
+      redirect: false,
+      username: email,
+      password: password,
+    });
+    if (result && result.error) {
+      setError(result.error);
+    }
+    else {
+      router.push("/dashboard");
+    }
   };
 
   return (
@@ -63,30 +67,7 @@ const Login: React.FC = () => {
               />
             </div>
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Remember me
-              </label>
-            </div>
-            <div className="text-sm">
-              <a
-                href="#"
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                Forgot your password?
-              </a>
-            </div>
-          </div>
+          {error && <div className="text-red-500 text-sm">{error}</div>}
           <div className="relative group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-200 group-hover:duration-200"></div>
             <button
