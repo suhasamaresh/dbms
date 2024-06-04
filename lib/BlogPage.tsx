@@ -45,3 +45,46 @@ export async function Likeincrement({ id }: { id: string }) {
       },
     });
   }
+
+  export async function blogsWritten(id: string) {
+    if (!id) {
+      throw new Error("User ID is required");
+    }
+  
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+  
+    if (!user) {
+      throw new Error("User not found");
+    }
+  
+    await prisma.user.update({
+      where: { id },
+      data: {
+        noblogs: (user.noblogs || 0) + 1,
+      },
+    });
+  }
+
+  export async function blogsRead(id: string){
+    if (!id) {
+      throw new Error("User ID is required");
+    }
+  
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+  
+    if (!user) {
+      throw new Error("User not found");
+    }
+  
+    await prisma.user.update({
+      where: { id },
+      data: {
+        noblogsread: (user.noblogsread || 0) + 1,
+      },
+    });
+  }
+

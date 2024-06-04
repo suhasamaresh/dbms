@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 
 const Login: React.FC = () => {
@@ -17,9 +18,8 @@ const Login: React.FC = () => {
       password: password,
     });
     if (result && result.error) {
-      setError(result.error);
-    }
-    else {
+      setError("The entered credentials are invalid. Please try again.");
+    } else {
       router.push("/dashboard");
     }
   };
@@ -67,7 +67,11 @@ const Login: React.FC = () => {
               />
             </div>
           </div>
-          {error && <div className="text-red-500 text-sm">{error}</div>}
+          {error && (
+            <div className="text-center text-red-500 text-sm font-bold bg-red-100 rounded p-2">
+              {error}
+            </div>
+          )}
           <div className="relative group">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-200 group-hover:duration-200"></div>
             <button
@@ -78,6 +82,14 @@ const Login: React.FC = () => {
                 <span className="text-gray-100 pl-44 pr-44">Login</span>
               </span>
             </button>
+          </div>
+          <div className="text-center text-white mt-4">
+            New here?{" "}
+            <Link href="/signup">
+              <div className="text-blue-500 hover:text-blue-700">
+                Register
+              </div>
+            </Link>
           </div>
         </form>
       </div>

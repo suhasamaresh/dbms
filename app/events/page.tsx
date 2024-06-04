@@ -3,6 +3,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 interface Event {
+  deadline: string | number | Date;
   Online: any;
   id: string;
   title: string;
@@ -27,14 +28,19 @@ interface Bookmark {
   id: string;
   title: string;
   thumbnail: string;
-  image: string; // New property for the image
+  image: string; 
 }
 
 interface Challenge {
   id: string;
   title: string;
   thumbnail: string;
-  image: string; // New property for the image
+  image: string; 
+}
+
+interface Data {
+  events: Event[];
+  featuredEvents: Event[]; 
 }
 
 const FeedPage = () => {
@@ -42,11 +48,12 @@ const FeedPage = () => {
     "personalized"
   );
   const [events, setEvents] = useState<Event[]>([]);
-  const [data, setData] = useState<any[]>([]); // Changed data to blogs
-  const [visibleEvents, setVisibleEvents] = useState<number>(6); // New state for visible events
+  const [data, setData] = useState<Data>({ events: [], featuredEvents: [] }); 
+  const [visibleEvents, setVisibleEvents] = useState<number>(6); 
+  const [sortOption, setSortOption] = useState<string>("ongoing");
 
   const handleShowMore = () => {
-    setVisibleEvents((prevVisibleEvents) => prevVisibleEvents + 6); // Increment visible events count by 6
+    setVisibleEvents((prevVisibleEvents) => prevVisibleEvents + 6); 
   };
 
   useEffect(() => {
@@ -54,8 +61,8 @@ const FeedPage = () => {
       try {
         const response = await fetch("/api/events");
         const data = await response.json();
-        setData(data);
-        setEvents(data.events || []); // Check if data.events exists, otherwise initialize as empty array
+        setData({ ...data, featuredEvents: data.events }); 
+        setEvents(data.events || []);
       } catch (error) {
         console.error("Error fetching events:", error);
       }
@@ -119,7 +126,23 @@ const FeedPage = () => {
       image: "https://example.com/challenge-image-2.jpg",
     },
   ];
-  
+
+  const sortEvents = (events: Event[]) => {
+    const now = new Date();
+    switch (sortOption) {
+      case "previous":
+        return events.filter((event) => new Date(event.deadline) < now);
+      case "ongoing":
+        return events.filter(
+          (event) =>
+            new Date(event.date) <= now && new Date(event.deadline) >= now
+        );
+      case "future":
+        return events.filter((event) => new Date(event.date) > now);
+      default:
+        return events;
+    }
+  };
 
   return (
     <div className="bg-black min-h-screen text-white pl-4 pr-4 md:pl-32 md:pr-32 font-mono">
@@ -144,16 +167,23 @@ const FeedPage = () => {
             }`}
             onClick={() => setActiveTab("features")}
           >
-            <img
-              src="/features.svg"
-              alt="Features"
-              className="mr-2 w-6 h-6"
-            />
+            <img src="/features.svg" alt="Features" className="mr-2 w-6 h-6" />
             <span className="font-mono">Features</span>
           </button>
         </div>
       </div>
       <div className="container py-4 md:py-8">
+        <div className="flex justify-end mb-4">
+          <select
+            className="bg-gray-800 text-white py-2 px-4 rounded-md"
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+          >
+            <option value="ongoing">Ongoing Events</option>
+            <option value="previous">Previous Events</option>
+            <option value="future">Future Events</option>
+          </select>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {Array.isArray(events) &&
             events.slice(0, visibleEvents).map((event) => (
@@ -178,14 +208,15 @@ const FeedPage = () => {
                         </div>
                       </div>
                       <p className="text-gray-400 mb-2 md:mb-4 font-mono">
-                        {event.description &&
-                        event.description.length > 150
+                        {event.description && event.description.length > 150
                           ? event.description.slice(0, 150) + "..."
                           : event.description}
                       </p>
                       <div className="flex items-center justify-between">
                         <div className="text-gray-400 text-sm font-mono">
-                          <span className="mr-2">{event.attendees} attendees</span>
+                          <span className="mr-2">
+                            {event.attendees} attendees
+                          </span>
                           <span>{event.sponsors} sponsors</span>
                         </div>
                         <div className="text-gray-400 text-sm font-mono">
@@ -199,20 +230,21 @@ const FeedPage = () => {
             ))}
         </div>
         {events.length > visibleEvents && (
-          <button onClick={handleShowMore} className="bg-gray-800 text-white font-mono py-2 px-4 mt-4 rounded-md hover:bg-gray-700">
+          <button
+            onClick={handleShowMore}
+            className="bg-gray-800 text-white font-mono py-2 px-4 mt-4 rounded-md hover:bg-gray-700"
+          >
             Show More
           </button>
         )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
           <div className="bg-gray-800 shadow-md rounded-lg p-4 border border-gray-700 flex flex-col">
-            <h3 className="text-lg font-medium mb-4 font-mono">Featured Events</h3>
+            <h3 className="text-lg font-medium mb-4 font-mono">
+              Featured Events
+            </h3>
             {data.featuredEvents &&
               data.featuredEvents.map((event) => (
                 <div key={event.id} className="flex items-center mb-2">
-                  <div
-                    className="w-16 h-16 md:w-20 md:h-20 bg-cover bg-center rounded-lg mr-2 md:mr-4"
-                    style={{ backgroundImage: `url(${event.thumbnail})` }}
-                  />
                   <div className="flex-1">
                     <h4 className="text-gray-400 font-medium text-sm md:text-base font-mono">
                       {event.title}
@@ -222,7 +254,9 @@ const FeedPage = () => {
               ))}
           </div>
           <div className="bg-gray-800 shadow-md rounded-lg p-4 border border-gray-700 flex flex-col">
-            <h3 className="text-lg font-medium mb-4 font-mono">Trending Events</h3>
+            <h3 className="text-lg font-medium mb-4 font-mono">
+              Trending Events
+            </h3>
             {trendingEvents.map((event) => (
               <div key={event.id} className="flex items-center mb-2">
                 <div

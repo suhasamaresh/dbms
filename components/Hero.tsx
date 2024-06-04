@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
+import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 const TiltingCard = () => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -28,16 +28,18 @@ const TiltingCard = () => {
       const rect = cardRef.current?.getBoundingClientRect();
       if (rect) {
         const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
-        window.dispatchEvent(new CustomEvent('card-scroll', { detail: { isVisible } }));
+        window.dispatchEvent(
+          new CustomEvent("card-scroll", { detail: { isVisible } })
+        );
       }
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
+    document.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -63,8 +65,16 @@ const TiltingCard = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-0"></div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-white text-center">
-              <Image src="/drait.jpeg" alt="Logo" width={100} height={100} className="lg:ml-20 ml-12 rounded-lg " />
-              <h2 className="text-2xl font-bold text-pink-600 drop-shadow-md">Dr AIT</h2>
+              <Image
+                src="/drait.jpeg"
+                alt="Logo"
+                width={100}
+                height={100}
+                className="lg:ml-20 ml-12 rounded-lg "
+              />
+              <h2 className="text-2xl font-bold text-pink-600 drop-shadow-md">
+                Dr AIT
+              </h2>
               <p className="text-sm text-[#4DFFF9] drop-shadow-md">
                 Elevate your event experience with our cutting-edge platform
               </p>
@@ -72,12 +82,20 @@ const TiltingCard = () => {
           </div>
         </div>
       </div>
-      <div data-aos="fade-left" className="w-2/5 h-full flex justify-center items-center hidden xl:visible bg-black md:flex flex-col xl:pr-32">
+      <div
+        data-aos="fade-left"
+        className="w-2/5 h-full flex justify-center items-center hidden xl:visible bg-black md:flex flex-col xl:pr-32"
+      >
         <div className="text-white text-left">
-          <h2 className="text-2xl font-bold mb-4 font-mono font-semibold text-green-500">Discover the Future of Events</h2>
+          <h2 className="text-2xl font-bold mb-4 font-mono font-semibold text-green-500">
+            Explore exclusive events and programs students can participate
+          </h2>
           <p className="text-gray-100 mt-3 font-mono">
-            Dr AIT's event management platform offers a seamless and innovative solution for your event needs. Streamline your planning, engage your
-            attendees, and elevate your events to new heights. Experience the power of cutting-edge technology and unparalleled service.
+            "Connect with essential student resources, events, and
+            opportunities. Access educational materials, workshops, and academic
+            programs tailored to your interests. Explore a comprehensive list of
+            competitions, seminars, and networking events to enhance your skills
+            and knowledge. Empower your learning journey with our app."
           </p>
         </div>
         <div className="relative group mt-7 z-10">
@@ -87,7 +105,9 @@ const TiltingCard = () => {
             className="relative px-2 py-2 bg-black rounded-lg leading-none flex items-center divide-x divide-gray-600"
           >
             <span className="flex items-center space-x-5">
-              <span className="text-gray-100 pl-12 pr-12 font-mono">Explore</span>
+              <span className="text-gray-100 pl-12 pr-12 font-mono">
+                Explore
+              </span>
             </span>
           </button>
         </div>

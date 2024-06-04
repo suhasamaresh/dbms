@@ -2,6 +2,8 @@ import prisma from "@/lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { Prisma } from "@prisma/client"; // Import Request from Prisma client
+import { NextApiRequest, NextApiResponse } from "next";
+import { getSession } from "next-auth/react";
 
 export async function POST(req: Request) {
     try {
@@ -38,3 +40,31 @@ export async function POST(req: Request) {
         );
     }
 }
+
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    const session = await getSession({ req });
+  
+    if (!session) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+  
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+  
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+  
+    res.json({
+      name: user.name,
+      email: user.email,
+      noblogs: user.noblogs,
+      noblogsread: user.noblogsread,
+      noeventsattended: user.noeventsattended,
+    });
+  }
+  
+
+

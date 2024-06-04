@@ -1,4 +1,6 @@
 "use client";
+import { blogsRead } from '@/lib/BlogPage';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
@@ -24,19 +26,33 @@ interface Challenge {
   image: string; // New property for the image
 }
 
-const FeedPage = () => {
-  const [activeTab, setActiveTab] = useState<'personalized' | 'features'>('personalized');
-  const [data, setData] = useState<any[]>([]); // Changed data to blogs 
-  const [challengesSectionHeight, setChallengesSectionHeight] = useState<number>(0);
+interface Blog {
+  id: string;
+  title: string;
+  content: string;
+  reads: number;
+  likes: number;
+  author: string;
+  image: string;
+}
 
+interface Data {
+  blogs: Blog[];
+  featuredBlogs: Blog[]; // Adding featuredBlogs property
+}
+
+const FeedPage = () => {
+  const { data: session, status } = useSession();
+  const [activeTab, setActiveTab] = useState<'personalized' | 'features'>('personalized');
+  const [data, setData] = useState<Data>({ blogs: [], featuredBlogs: [] }); // Changed data to include featuredBlogs
+  const [challengesSectionHeight, setChallengesSectionHeight] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/blogs');
         const data = await response.json();
-        setData(data);
-        setBlogs(data);
+        setData({ ...data, featuredBlogs: data.blogs }); // Set both blogs and featuredBlogs
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -46,8 +62,13 @@ const FeedPage = () => {
     const challengesSection = document.getElementById('challenges-section');
     if (challengesSection) {
       setChallengesSectionHeight(challengesSection.clientHeight);
-    }
-  }, []); // Added dependency array to useEffect
+    } 
+  }, []);
+
+  const handleclick = async() =>{
+    await blogsRead((session as any).user.id)
+    console.log("Blogsread called");
+  }
 
   const trendingArticles: TrendingArticle[] = [
     {
@@ -130,11 +151,11 @@ const FeedPage = () => {
       <div className="container py-4 md:py-8 flex flex-col md:flex-row">
         <div className="flex-[3_3_0%] pr-4">
           <div className="flex space-x-4 md:space-x-10">
-            <button className="font-mono bg-gray-800 hover:bg-gray-700 px-2 md:px-4 py-2 rounded-md transition-colors">Personalised</button>
+            <button className="font-mono bg-gray-800 hover:bg-gray-700 px-2 md:px-4 py-2 rounded-md transition-colors">Personalized</button>
             <button className="font-mono bg-gray-800 hover:bg-gray-700 px-2 md:px-4 py-2 rounded-md transition-colors">Featured</button>
           </div>
           {data.blogs && data.blogs.map((blog: any) => (
-            <Link key={blog.id} href={`/blogs/${blog.id}`}>
+            <Link key={blog.id} href={`/blogs/${blog.id}`} onClick={handleclick}>
               <div className="blog-link ">
                 <div className="bg-gray-800 mt-4 shadow-md rounded-lg mb-4 flex border border-gray-700 hover:border-blue-800 card">
                   <div className="w-24 md:w-32 mt-2 md:mt-3 h-24 md:h-32 bg-cover bg-center ml-1 rounded-lg" style={{ backgroundImage: `url(${blog.image})` }} />
@@ -201,7 +222,3 @@ const FeedPage = () => {
 };
 
 export default FeedPage;
-
-function setBlogs(data: any) {
-  throw new Error('Function not implemented.');
-}

@@ -1,19 +1,13 @@
-"use client"
-import React, { useState, ChangeEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+"use client";
+import React, { useState, ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 
 const Dashboard: React.FC = () => {
-  const userInfo = {
-    username: 'JohnDoe',
-    email: 'johndoe@example.com',
-    blogsWritten: 12,
-    blogsRead: 34,
-    eventsAttended: 5,
-  };
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const router = useRouter();
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -28,12 +22,26 @@ const Dashboard: React.FC = () => {
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
-    router.push('/');
-  }
-  
+    router.push("/");
+  };
 
   const handleGoBack = () => {
-    router.push('/');
+    router.push("/");
+  };
+
+  if (!session) {
+    return <p>Loading...</p>; // Or redirect to login page
+  }
+
+  const { user } = session;
+
+  const userInfo = {
+    username: user?.name || "Anonymous",
+    email: user?.email || "No email provided",
+    blogsWritten: user?.noblogs || 0,
+    blogsRead: user?.noblogsread ?? 0,
+    eventsAttended: user?.noeventsattended ?? 0,
+    
   };
 
   return (
@@ -43,7 +51,7 @@ const Dashboard: React.FC = () => {
         <div className="flex justify-center mb-6">
           <label htmlFor="profileImageInput" className="cursor-pointer">
             <img
-              src={profileImage || 'https://via.placeholder.com/150'}
+              src={profileImage || "https://via.placeholder.com/150"}
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover border-2 border-gray-500"
             />
@@ -73,6 +81,7 @@ const Dashboard: React.FC = () => {
             <p className="font-semibold">Events Attended</p>
             <p className="text-2xl">{userInfo.eventsAttended}</p>
           </div>
+        
         </div>
         <div className="flex space-x-4">
           <div className="relative group flex-1">

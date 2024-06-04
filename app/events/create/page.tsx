@@ -16,29 +16,29 @@ const EventCreation = () => {
     termsAndConditions: false,
   });
 
-  const convertDateToTimestamp = (date) => {
+  const convertDateToTimestamp = (date: string | number | Date) => {
     const dateObject = new Date(date);
     const timestamp = Math.floor(dateObject.getTime() / 1000);
     return timestamp;
   };
 
-  const handleDeadlineChange = (e) => {
+  const handleDeadlineChange = (e: { target: { value: any; }; }) => {
     const { value } = e.target;
     const timestamp = convertDateToTimestamp(value);
-    setFormData({ ...formData, deadline: timestamp });
+    setFormData({ ...formData, deadline: timestamp.toString() });
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleCheckboxChange = (e) => {
+  const handleCheckboxChange = (e: { target: { name: any; checked: any; }; }) => {
     const { name, checked } = e.target;
     setFormData({ ...formData, [name]: checked });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (!formData.termsAndConditions) {
       console.error("Please accept the terms and conditions.");
@@ -64,7 +64,7 @@ const EventCreation = () => {
     termsAndConditions: z.boolean(),
   });
 
-  const validate = (data) => {
+  const validate = (data: unknown) => {
     try {
       eventSchema.parse(data);
       return true;

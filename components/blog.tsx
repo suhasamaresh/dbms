@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 const App: React.FC = () => {
-  const [blogs, setBlogs] = useState<any[]>([]); // State for blogs
+  const [blogs, setBlogs] = useState<any[]>([]); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -11,7 +11,7 @@ const App: React.FC = () => {
         const response = await fetch("/api/blogs");
         const data = await response.json();
         if (Array.isArray(data.blogs)) {
-          setBlogs(data.blogs); // Set fetched blogs to state if it's an array
+          setBlogs(data.blogs); 
         } else {
           console.error("Data is not in the expected format:", data);
         }
@@ -28,8 +28,8 @@ const App: React.FC = () => {
         <h1 className="text-green-500 text-center text-3xl font-bold mb-8 font-mono">
           Explore some of the blogs
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8  ">
-          {blogs.map((blog, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {blogs.slice(0, 6).map((blog, index) => (
             <Link href={`/blogs/${blog.id}`} key={index}>
               <div className="bg-gray-800 rounded-lg overflow-hidden h-full border border-gray-700 hover:border-blue-800 card">
                 <img

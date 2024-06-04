@@ -16,7 +16,7 @@ model User {
   image         String?
   noblogs      Int             @default(0)
   noeventsattended     Int             @default(0)
-  noeventscreated     Int             @default(0)
+  noblogsread     Int             @default(0)
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support
@@ -106,7 +106,10 @@ model events {
   Online Boolean
   registrationLink String
   sponsors String
-  type String
 }
 
-
+model Newsletter {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}

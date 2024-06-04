@@ -32,7 +32,7 @@ const EventsPage: React.FC = () => {
     <div className="bg-black px-6 py-6 text-gray-300 font-mono">
       <div className="md:flex md:px-20 items-center">
         <div className="w-full md:w-1/2 md:pr-8 mb-6 md:mb-0">
-          <h1 className="text-xl font-bold mb-4 text-green-500">Some of the Recent Events</h1>
+          <h1 className="text-xl font-bold mb-4 text-green-500">Some of student beneficial events</h1>
           <p>This section can contain additional text or information related to the recent events.<br />
           It takes up half of the screen width.<br />
           Here, you can add more details, summaries, or descriptions about the events listed on the right.</p>
