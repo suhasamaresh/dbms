@@ -20,6 +20,7 @@ const Navbar: React.FC = () => {
               <a href="/" className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Explore</a>
               <a href="/blogs" className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Blogs</a>
               <a href="/events" className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Events</a>
+              <a href="/community" className="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Communities</a>
             </div>
           </div>
           <div className="hidden md:flex items-center">

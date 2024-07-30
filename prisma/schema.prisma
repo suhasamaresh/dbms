@@ -113,3 +113,12 @@ model Newsletter {
   email     String   @unique
   createdAt DateTime @default(now())
 }
+
+model community{
+  id        Int      @id @default(autoincrement())
+  name     String   @unique
+  description String
+  image String
+  createdAt DateTime @default(now())
+  nomembers Int @default(0)
+}

@@ -8,6 +8,11 @@ import Footer from "@/components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const meta: Metadata = {
+  title: "Student's Resources",
+  description: "A comprehensive collection of resources for students.",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
